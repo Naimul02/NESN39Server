@@ -47,7 +47,7 @@ async function run() {
     const chocolateProductsColletion = client.db("departmentalStore").collection("chocolateproducts")
     const bookingsCollection = client.db("departmentalStore").collection('bookings');
     const addServiceCollection = client.db("departmentalStore").collection("addservice");
-    const reviewCollection = client.db("departmentalStore").collection("review");
+    const reviewCollection = client.db("NESN39").collection("reviews");
     const randomCollection = client.db("departmentalStore").collection("randomproducts");
     const usersCollection = client.db("departmentalStore").collection("users");
 
@@ -118,7 +118,7 @@ async function run() {
       res.send(result)
 
     })
-    app.post('/review', async (req, res) => {
+    app.post('/reviews', async (req, res) => {
       const info = req.body;
       const result = await reviewCollection.insertOne(info)
       res.send(result)

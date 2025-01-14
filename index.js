@@ -42,6 +42,7 @@ async function run() {
   try {
 
     const milkProductsCollection = client.db("NESN39").collection("milkProducts")
+    const productsCollection = client.db("NESN39").collection("Products")
     const cakeProductsCollection = client.db("departmentalStore").collection("cakeproducts")
     const shampooProductsCollection = client.db("departmentalStore").collection("shampoo")
     const chocolateProductsColletion = client.db("departmentalStore").collection("chocolateproducts")
@@ -62,33 +63,26 @@ async function run() {
       const result = await usersCollection.find(query).toArray()
       res.send(result)
     })
-    app.get('/milkproducts', async (req, res) => {
-      // const email = req.query.email;
-      // const decodedEmail = req.decoded.email
-      // if (email !== decodedEmail) {
-      //   return res.status(403).send({ message: 'forbidden access' })
-      // }
-      const query = {};
-      const result = await milkProductsCollection.find(query).toArray();
-      // console.log(result);
-      res.send(result)
-    })
-    app.get('/milkProduct/:id' , async(req , res) => {
-      const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
-      const result = await milkProductsCollection.findOne(query);
+    app.get('/products' , async(req ,res) => {
+      const query = {}
+      const result = await productsCollection.find(query).toArray();
       res.send(result);
     })
-    app.get('/cake', async (req, res) => {
-      const query = {}
-      const result = await cakeProductsCollection.find(query).toArray();
-      res.send(result)
+
+    app.get('/product/:id' , async(req , res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await productsCollection.findOne(query);
+      res.send(result);
     })
-    app.get('/shampoo', async (req, res) => {
-      const query = {}
-      const result = await shampooProductsCollection.find(query).toArray();
-      res.send(result)
+    app.get('/relatedProducts/:category' , async(req , res) => {
+      const category = req.params.category;
+      const query = {category : category}
+      const result = await productsCollection.find(query).toArray();
+      res.send(result);
     })
+    
+    
     app.get('/bookings', async (req, res) => {
       const email = req.query.email;
       // const decodedEmail = req.decoded.email;
@@ -124,8 +118,9 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/review', async (req, res) => {
-      const query = {}
+    app.get('/reviews/:id', async (req, res) => {
+      const id = req.params.id
+      const query = {productId : id}
       const result = await reviewCollection.find(query).toArray()
       res.send(result)
     })

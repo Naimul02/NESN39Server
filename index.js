@@ -42,21 +42,34 @@ async function run() {
   try {
 
     const milkProductsCollection = client.db("NESN39").collection("milkProducts")
+    const categoryProductsCollection = client.db("NESN39").collection("Products")
     const productsCollection = client.db("NESN39").collection("Products")
-    const cakeProductsCollection = client.db("departmentalStore").collection("cakeproducts")
-    const shampooProductsCollection = client.db("departmentalStore").collection("shampoo")
+    
+    
     const chocolateProductsColletion = client.db("departmentalStore").collection("chocolateproducts")
     const bookingsCollection = client.db("departmentalStore").collection('bookings');
     const addServiceCollection = client.db("departmentalStore").collection("addservice");
     const reviewCollection = client.db("NESN39").collection("reviews");
-    const randomCollection = client.db("departmentalStore").collection("randomproducts");
-    const usersCollection = client.db("departmentalStore").collection("users");
+    // const randomCollection = client.db("departmentalStore").collection("randomproducts");
+    const usersCollection = client.db("NESN39").collection("users");
+    const cartsCollection = client.db("NESN39").collection("carts");
 
 
     app.post('/users', async (req, res) => {
       const info = req.body;
       const result = await usersCollection.insertOne(info)
       res.send(result)
+    })
+    app.get('/carts' , async(req , res) => {
+      const email = req.query.email;
+      const query = {email : email};
+      const result = await cartsCollection.find(query).toArray();
+      res.send(result);
+    })
+    app.post('/carts' , async(req , res) => {
+      const info = req.body;
+      const result = await cartsCollection.insertOne(info);
+      res.send(result);
     })
     app.get('/users', async (req, res) => {
       const query = {}
@@ -132,6 +145,14 @@ async function run() {
     app.get('/randomproducts', async (req, res) => {
       const query = {}
       const result = await randomCollection.find(query).toArray()
+      res.send(result);
+    })
+    app.get("/categoryProducts/:category" , async(req , res) => {
+      const category = req.params.category;
+      
+      const query = {category : category};
+      const result = await categoryProductsCollection.find(query).toArray();
+      console.log(result);
       res.send(result);
     })
 

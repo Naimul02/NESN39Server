@@ -53,6 +53,8 @@ async function run() {
     // const randomCollection = client.db("departmentalStore").collection("randomproducts");
     const usersCollection = client.db("NESN39").collection("users");
     const cartsCollection = client.db("NESN39").collection("carts");
+    const confirmOrderCollection = client.db("NESN39").collection("confirmOrder");
+    
 
 
     app.post('/users', async (req, res) => {
@@ -70,6 +72,28 @@ async function run() {
       const info = req.body;
       const result = await cartsCollection.insertOne(info);
       res.send(result);
+    })
+    app.post('/orderConfirm' , async(req , res) => {
+        const info = req.body;
+        const result = await confirmOrderCollection.insertOne(info)
+        res.send(result)
+    })
+    app.delete('/order/:id' , async(req , res) => {
+      const id = req.params.id;
+      const query = {"orders._id" : id};
+      const update = {$pull : {orders : {_id : id}}}
+      
+      
+      const result = await confirmOrderCollection.updateOne(query , update)
+      res.send(result)
+    })
+    app.get('/orders' , async(req , res) => {
+      const email = req.query.email;
+      const query = {email : email}
+      const allOrders = await confirmOrderCollection.find(query).toArray();
+      const orders =  allOrders?.flatMap(order => order?.orders);
+      console.log("orders" , orders)
+      res.send(orders)
     })
     app.get('/users', async (req, res) => {
       const query = {}
@@ -117,6 +141,12 @@ async function run() {
 
 
 
+    })
+    app.delete('/product' , async(req , res) => {
+      const id = req.query.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await cartsCollection.deleteOne(query)
+      res.send(result)
     })
     app.post('/bookings', async (req, res) => {
       const info = req.body;

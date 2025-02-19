@@ -95,6 +95,61 @@ async function run() {
       console.log("orders" , orders)
       res.send(orders)
     })
+    app.get("/usersImg" , async(req , res) => {
+        const email = req.query.email;
+        const query = {email}
+        const result = await usersCollection.findOne(query)
+        res.send(result);
+    })
+    app.put('/changePassword' , async(req , res) => {
+      const info = req.body;
+      
+      
+      const filter = { email: info?.email}
+
+      const data = await usersCollection.findOne(filter);
+      const password = data?.password;
+      
+
+      
+      if(password  === info?.currentPassword){
+        const options = { upsert: true };
+        const updatedDoc = {
+          $set: {
+            password : info?.password
+  
+          }
+        }
+        const result = await usersCollection.updateOne(filter, updatedDoc, options);
+        res.send(result)
+      }
+      else{
+        res.send({ message: 'Your current password did not match.Please try again' });
+      }
+
+     
+     
+    })
+    app.put('/users/:email' , async(req , res) => {
+      const info = req.body;
+      
+      const email = req.params.email;
+      const filter = { email: email}
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          name : info.name,
+          email : info.email,
+          address : info.address,
+          phoneNumber : info.phoneNumber,
+          photourl : info.photoURL
+
+        }
+      }
+      const result = await usersCollection.updateOne(filter, updatedDoc, options);
+      res.send(result)
+        
+    })
     app.get('/users', async (req, res) => {
       const query = {}
       const result = await usersCollection.find(query).toArray()

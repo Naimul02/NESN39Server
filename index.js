@@ -73,6 +73,24 @@ async function run() {
       const result = await cartsCollection.find(query).toArray();
       res.send(result);
     })
+
+    
+app.get('/cart', async (req, res) => {
+  const { email, id } = req.query;
+  const item = await cartsCollection.findOne({ email, id });
+  res.send(item ? [item] : []);
+});
+
+
+app.patch('/carts/:id', async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+  await cartsCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { quantity } }
+  );
+  res.send({ success: true });
+});
     app.post('/carts' , async(req , res) => {
       const info = req.body;
       const result = await cartsCollection.insertOne(info);
@@ -216,6 +234,24 @@ async function run() {
       const result = await bookingsCollection.insertOne(info)
       res.send(result)
 
+    })
+    app.get('/review/:email/:id' , async(req , res) => {
+        const email = req.params.email;
+        const productId = req.params.id
+        const query = {
+          email : email,
+          productId : productId
+        }
+
+        const  result = await reviewCollection.findOne(query);
+        console.log("result" , result)
+        
+    if (result) {
+      res.send({ reviewed : true, data: result });
+    } else {
+      res.send({ reviewed: false });
+    }
+        
     })
     app.post('/reviews', async (req, res) => {
       const info = req.body;
